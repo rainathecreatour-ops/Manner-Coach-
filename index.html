@@ -196,8 +196,7 @@
     { id:'firm',        emoji:'🛡️', label:'Firm & Respectful' },
   ];
 
-  // ⬇️ PASTE YOUR ANTHROPIC API KEY BETWEEN THE QUOTES BELOW
-  const ANTHROPIC_API_KEY = 'YOUR_ANTHROPIC_API_KEY_HERE';
+
 
   let currentMode = 'text';
   let currentTone = 'friendly';
@@ -284,35 +283,19 @@ Rewrite the message in the requested tone, keeping the user's original meaning a
 Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
 
     try {
-      if (!ANTHROPIC_API_KEY || ANTHROPIC_API_KEY === 'YOUR_ANTHROPIC_API_KEY_HERE') {
-        showResult({ rewrite: '⚠️ No API key set. Please open index.html and replace YOUR_ANTHROPIC_API_KEY_HERE with your real Anthropic API key.', coaching: '' }, text);
-        return;
-      }
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
+      const res = await fetch('/api/coach', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          system: systemPrompt,
-          messages: [{ role: 'user', content: `Tone: ${toneLabel}\nMessage: "${text}"` }]
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, tone: toneLabel, helpFinish })
       });
       const data = await res.json();
       if (data.error) {
-        showResult({ rewrite: `⚠️ API Error: ${data.error.message}`, coaching: '' }, text);
+        showResult({ rewrite: `⚠️ Error: ${data.error}`, coaching: '' }, text);
         return;
       }
-      const raw = (data.content || []).map(b => b.text || '').join('').replace(/```json|```/g,'').trim();
-      const parsed = JSON.parse(raw);
-      showResult(parsed, text);
+      showResult(data, text);
     } catch (err) {
-      showResult({ rewrite: `⚠️ Error: ${err.message}. Check that your API key is correct and try again.`, coaching: '' }, text);
+      showResult({ rewrite: `⚠️ Error: ${err.message}`, coaching: '' }, text);
     }
 
     document.getElementById('loading').style.display = 'none';
