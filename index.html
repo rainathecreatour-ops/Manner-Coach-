@@ -20,17 +20,29 @@
       background: #fdeee8; border: 1px solid #f0d5cc; border-radius: 10px;
       padding: 7px 14px; color: #c97d6e; font-size: 13px; font-weight: 600;
     }
-    .main { max-width: 520px; margin: 0 auto; padding: 24px 16px; }
+    .main { max-width: 520px; margin: 0 auto; padding: 24px 16px; padding-bottom: 60px; }
 
-    .mode-toggle {
+    /* Toggle rows */
+    .toggle-row {
       display: flex; background: #fff8f3; border: 1px solid #f0d5cc;
-      border-radius: 14px; padding: 4px; margin-bottom: 24px;
+      border-radius: 14px; padding: 4px; margin-bottom: 12px;
     }
-    .mode-btn {
+    .toggle-btn {
       flex: 1; padding: 10px; border-radius: 10px; border: none;
       background: transparent; color: #9b7b6e; font-weight: 600; font-size: 14px; transition: all 0.2s;
     }
-    .mode-btn.active { background: #c97d6e; color: #fff; }
+    .toggle-btn.active { background: #c97d6e; color: #fff; }
+
+    /* Type toggle — spoken vs action */
+    .type-toggle {
+      display: flex; background: #fff8f3; border: 1px solid #f0d5cc;
+      border-radius: 14px; padding: 4px; margin-bottom: 20px;
+    }
+    .type-btn {
+      flex: 1; padding: 10px; border-radius: 10px; border: none;
+      background: transparent; color: #9b7b6e; font-weight: 600; font-size: 14px; transition: all 0.2s;
+    }
+    .type-btn.active { background: #a06b8a; color: #fff; }
 
     .tone-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 20px; }
     .tone-btn {
@@ -57,9 +69,14 @@
       background: #fdeee8; color: #4a3728; font-size: 14px; resize: vertical;
       outline: none; line-height: 1.6;
     }
-    .input-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+    .input-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; flex-wrap: wrap; gap: 8px; }
     .help-label { display: flex; align-items: center; gap: 6px; color: #9b7b6e; font-size: 13px; }
     .help-label input { accent-color: #c97d6e; }
+    .btn-row { display: flex; gap: 8px; }
+    .clear-input-btn {
+      padding: 10px 14px; background: none; border: 1.5px solid #f0d5cc;
+      border-radius: 12px; color: #9b7b6e; font-size: 14px; font-weight: 600;
+    }
     .coach-btn {
       padding: 10px 22px; background: #c97d6e; color: #fff; border: none;
       border-radius: 12px; font-size: 14px; font-weight: 600; transition: background 0.2s;
@@ -83,11 +100,11 @@
     .coaching-text { color: #9b7b6e; font-size: 13px; line-height: 1.6; }
     .result-btns { display: flex; gap: 8px; margin-top: 12px; }
     .result-btns button {
-      flex: 1; padding: 9px; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 600;
+      flex: 1; padding: 9px; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
     }
     .copy-btn { background: #c97d6e; }
     .save-btn { background: #e8a598; }
-    .save-btn.saved { background: #7dab8a; }
+    .clear-result-btn { background: #b0a0a0; }
 
     .tips { margin-top: 24px; background: #fdeee8; border-radius: 14px; padding: 16px; }
     .tips-title { color: #c97d6e; font-weight: 600; font-size: 13px; margin-bottom: 8px; }
@@ -106,12 +123,13 @@
     .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .history-header h3 { color: #4a3728; font-size: 18px; }
     .history-actions { display: flex; gap: 8px; }
-    .clear-btn { color: #9b7b6e; background: none; border: 1px solid #f0d5cc; border-radius: 8px; padding: 5px 10px; font-size: 12px; }
-    .close-btn { color: #c97d6e; background: none; border: none; font-size: 20px; line-height: 1; }
+    .clear-btn { color: #9b7b6e; background: none; border: 1px solid #f0d5cc; border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer; }
+    .close-btn { color: #c97d6e; background: none; border: none; font-size: 20px; line-height: 1; cursor: pointer; }
     .history-empty { color: #9b7b6e; text-align: center; padding: 24px; }
     .history-item { border: 1px solid #f0d5cc; border-radius: 12px; padding: 14px; margin-bottom: 10px; background: #fdf6f0; }
-    .history-meta { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .history-meta { display: flex; justify-content: space-between; margin-bottom: 6px; flex-wrap: wrap; gap: 4px; }
     .history-tone { font-size: 11px; color: #c97d6e; font-weight: 600; text-transform: capitalize; }
+    .history-type { font-size: 11px; color: #a06b8a; font-weight: 600; text-transform: capitalize; }
     .history-date { font-size: 11px; color: #9b7b6e; }
     .history-original { color: #9b7b6e; font-size: 12px; margin-bottom: 6px; font-style: italic; }
     .history-rewrite { color: #4a3728; font-size: 13px; }
@@ -126,53 +144,77 @@
 </div>
 
 <div class="main">
-  <div class="mode-toggle">
-    <button class="mode-btn active" id="btn-text" onclick="setMode('text')">✍️ Write</button>
-    <button class="mode-btn" id="btn-voice" onclick="setMode('voice')">🎙️ Speak</button>
+
+  <!-- Input Mode: Write or Speak -->
+  <div class="section-label">Input Mode</div>
+  <div class="toggle-row" style="margin-bottom:12px;">
+    <button class="toggle-btn active" id="btn-text" onclick="setMode('text')">✍️ Write</button>
+    <button class="toggle-btn" id="btn-voice" onclick="setMode('voice')">🎙️ Speak</button>
   </div>
 
+  <!-- Type: Spoken Words or Action -->
+  <div class="section-label">What are you coaching?</div>
+  <div class="type-toggle">
+    <button class="type-btn active" id="btn-spoken" onclick="setType('spoken')">🗣️ Spoken Words</button>
+    <button class="type-btn" id="btn-action" onclick="setType('action')">🤝 An Action I Did</button>
+  </div>
+
+  <!-- Tone -->
   <div class="section-label">Choose Your Tone</div>
   <div class="tone-grid" id="tone-grid"></div>
 
+  <!-- Input Card -->
   <div class="input-card">
     <div class="record-wrap" id="voice-controls" style="display:none">
       <button class="record-btn" id="record-btn" onclick="toggleRecording()">🎙️</button>
       <p class="record-hint" id="record-hint">Tap to start recording</p>
       <div class="transcript" id="transcript" style="display:none"></div>
     </div>
-    <textarea class="input-text" id="main-input" rows="5" placeholder="Type what you want to say — rough, incomplete, or full…"></textarea>
+    <textarea class="input-text" id="main-input" rows="5" placeholder="Type something you said…"></textarea>
     <div class="input-footer">
       <label class="help-label">
         <input type="checkbox" id="help-finish" /> Help me finish this
       </label>
-      <button class="coach-btn" onclick="coach()" id="coach-btn">Coach Me ✨</button>
+      <div class="btn-row">
+        <button class="clear-input-btn" onclick="clearInput()">Clear</button>
+        <button class="coach-btn" onclick="coach()" id="coach-btn">Coach Me ✨</button>
+      </div>
     </div>
   </div>
 
+  <!-- Loading -->
   <div class="loading" id="loading" style="display:none">
     <div class="spin">🌸</div>
     <p style="margin-top:10px">Crafting your coached response…</p>
   </div>
 
+  <!-- Result -->
   <div class="result-card" id="result-card" style="display:none">
-    <div class="result-label">✅ Your Coached Response</div>
+    <div class="result-label" id="result-label">✅ Here's What You Could Say Instead</div>
     <div class="result-text" id="result-text"></div>
     <div class="coaching-note" id="coaching-note" style="display:none">
       <div class="coaching-title">💡 Coaching Note</div>
       <div class="coaching-text" id="coaching-text"></div>
     </div>
     <div class="result-btns">
-      <button class="copy-btn" onclick="copyResult()">Copy Text</button>
-      <button class="save-btn" id="save-btn" onclick="saveToHistory()">Save to History</button>
+      <button class="copy-btn" onclick="copyResult()">Copy</button>
+      <button class="save-btn" id="save-btn" onclick="saveToHistory()">Save</button>
+      <button class="clear-result-btn" onclick="clearAll()">Start Over</button>
     </div>
   </div>
 
+  <!-- Tips -->
   <div class="tips" id="tips">
-    <div class="tips-title">💬 Tips for using Manner Coach</div>
-    <div class="tips-text">Speak or write naturally — even if it's rough or unfinished. Choose the tone that fits your situation, and let the coach help you find the right words. Your history is always saved so you can revisit and learn.</div>
+    <div class="tips-title">💬 How to use Manner Coach</div>
+    <div class="tips-text">
+      Select <strong>Spoken Words</strong> to improve something you said or want to say.<br><br>
+      Select <strong>An Action I Did</strong> to describe a behavior — like "I grabbed the cards" or "I walked away mid-conversation" — and the coach will show you a better way to handle it.<br><br>
+      Choose a tone, then tap <strong>Coach Me</strong>!
+    </div>
   </div>
 </div>
 
+<!-- History Overlay -->
 <div id="history-overlay">
   <div class="history-panel">
     <div class="history-header">
@@ -196,9 +238,8 @@
     { id:'firm',        emoji:'🛡️', label:'Firm & Respectful' },
   ];
 
-
-
   let currentMode = 'text';
+  let currentType = 'spoken';
   let currentTone = 'friendly';
   let lastResult = null;
   let recognizer = null;
@@ -209,6 +250,7 @@
 
   window.onload = () => { buildTones(); updateHistoryCount(); };
 
+  // ── Tones ──────────────────────────────────────────────────────────────────
   function buildTones() {
     const grid = document.getElementById('tone-grid');
     grid.innerHTML = TONES.map(t => `
@@ -223,17 +265,37 @@
     document.getElementById('tone-'+id).classList.add('active');
   }
 
+  // ── Input Mode (write / voice) ─────────────────────────────────────────────
   function setMode(m) {
     currentMode = m;
     document.getElementById('btn-text').classList.toggle('active', m === 'text');
     document.getElementById('btn-voice').classList.toggle('active', m === 'voice');
     document.getElementById('voice-controls').style.display = m === 'voice' ? 'block' : 'none';
-    document.getElementById('main-input').placeholder = m === 'voice'
-      ? 'Your speech will appear here, or type to edit…'
-      : 'Type what you want to say — rough, incomplete, or full…';
-    clearResult();
+    updatePlaceholder();
   }
 
+  // ── Type (spoken / action) ─────────────────────────────────────────────────
+  function setType(t) {
+    currentType = t;
+    document.getElementById('btn-spoken').classList.toggle('active', t === 'spoken');
+    document.getElementById('btn-action').classList.toggle('active', t === 'action');
+    updatePlaceholder();
+  }
+
+  function updatePlaceholder() {
+    const ta = document.getElementById('main-input');
+    if (currentMode === 'voice') {
+      ta.placeholder = currentType === 'action'
+        ? 'Describe what you did — e.g. "I grabbed the cards"…'
+        : 'Your speech will appear here, or type to edit…';
+    } else {
+      ta.placeholder = currentType === 'action'
+        ? 'Describe what you did — e.g. "I grabbed the cards", "I walked away mid-conversation"…'
+        : 'Type something you said or want to say — rough or complete…';
+    }
+  }
+
+  // ── Voice Recording ────────────────────────────────────────────────────────
   function toggleRecording() { isRecording ? stopRecording() : startRecording(); }
 
   function startRecording() {
@@ -264,6 +326,7 @@
     hint.textContent = isRecording ? 'Recording… tap to stop' : 'Tap to start recording';
   }
 
+  // ── Coach ──────────────────────────────────────────────────────────────────
   async function coach() {
     const text = document.getElementById('main-input').value.trim();
     if (!text) return;
@@ -276,17 +339,11 @@
     document.getElementById('result-card').style.display = 'none';
     document.getElementById('tips').style.display = 'none';
 
-    const systemPrompt = `You are a warm, encouraging communication coach called Manner Coach. Help people speak and write more respectfully, clearly, and kindly.
-
-Rewrite the message in the requested tone, keeping the user's original meaning and key words. Provide a short coaching note (2-3 sentences) explaining what was improved.${helpFinish ? ' The user wants help finishing their message — complete it naturally in their voice.' : ''}
-
-Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
-
     try {
       const res = await fetch('/api/coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, tone: toneLabel, helpFinish })
+        body: JSON.stringify({ text, tone: toneLabel, type: currentType, helpFinish })
       });
       const data = await res.json();
       if (data.error) {
@@ -303,38 +360,54 @@ Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
   }
 
   function showResult(r, originalText) {
-    lastResult = { ...r, original: originalText, tone: currentTone };
+    lastResult = { ...r, original: originalText, tone: currentTone, type: currentType };
     document.getElementById('result-text').textContent = r.rewrite;
+    document.getElementById('result-label').textContent = currentType === 'action'
+      ? '✅ Here\'s How You Could Have Handled That'
+      : '✅ Here\'s What You Could Say Instead';
     const noteEl = document.getElementById('coaching-note');
     if (r.coaching) {
       document.getElementById('coaching-text').textContent = r.coaching;
       noteEl.style.display = 'block';
     } else { noteEl.style.display = 'none'; }
     document.getElementById('result-card').style.display = 'block';
-    document.getElementById('save-btn').textContent = 'Save to History';
+    document.getElementById('save-btn').textContent = 'Save';
     document.getElementById('save-btn').style.background = '#e8a598';
   }
 
-  function clearResult() {
-    lastResult = null;
-    document.getElementById('result-card').style.display = 'none';
-    document.getElementById('tips').style.display = 'block';
+  // ── Clear ──────────────────────────────────────────────────────────────────
+  function clearInput() {
     document.getElementById('main-input').value = '';
+    document.getElementById('help-finish').checked = false;
     const tr = document.getElementById('transcript');
     tr.style.display = 'none'; tr.textContent = '';
+    document.getElementById('result-card').style.display = 'none';
+    document.getElementById('tips').style.display = 'block';
+    lastResult = null;
   }
 
+  function clearAll() {
+    clearInput();
+  }
+
+  // ── Copy / Save ────────────────────────────────────────────────────────────
   function copyResult() {
     navigator.clipboard.writeText(document.getElementById('result-text').textContent).then(() => {
       const btn = document.querySelector('.copy-btn');
       btn.textContent = 'Copied! ✓';
-      setTimeout(() => btn.textContent = 'Copy Text', 2000);
+      setTimeout(() => btn.textContent = 'Copy', 2000);
     });
   }
 
   function saveToHistory() {
     if (!lastResult) return;
-    history.push({ original: lastResult.original, rewrite: lastResult.rewrite, tone: lastResult.tone, date: new Date().toLocaleDateString() });
+    history.push({
+      original: lastResult.original,
+      rewrite: lastResult.rewrite,
+      tone: lastResult.tone,
+      type: lastResult.type,
+      date: new Date().toLocaleDateString()
+    });
     localStorage.setItem('mc_history', JSON.stringify(history));
     updateHistoryCount();
     const btn = document.getElementById('save-btn');
@@ -346,6 +419,7 @@ Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
     el.textContent = history.length > 0 ? `(${history.length})` : '';
   }
 
+  // ── History ────────────────────────────────────────────────────────────────
   function openHistory() {
     const list = document.getElementById('history-list');
     if (history.length === 0) {
@@ -355,6 +429,7 @@ Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
         <div class="history-item">
           <div class="history-meta">
             <span class="history-tone">${item.tone} tone</span>
+            <span class="history-type">${item.type === 'action' ? '🤝 Action' : '🗣️ Spoken'}</span>
             <span class="history-date">${item.date}</span>
           </div>
           <p class="history-original">Original: ${item.original}</p>
