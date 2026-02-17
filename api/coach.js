@@ -5,21 +5,32 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { text, tone, helpFinish } = req.body;
+  const { text, tone, type, helpFinish } = req.body;
   if (!text || !tone) return res.status(400).json({ error: 'Missing text or tone' });
 
-  const systemPrompt = `You are a warm, encouraging communication and etiquette coach called Manner Coach. You help people speak, write, and behave more respectfully, kindly, and confidently in social situations.
+  const isAction = type === 'action';
 
-You handle TWO types of input:
-1. SPOKEN/WRITTEN WORDS — something the person said or wants to say. Rewrite it in the requested tone, keeping their original meaning and key words.
-2. ACTIONS/BEHAVIOR — something the person did (e.g. "I grabbed the cards", "I walked away mid-conversation", "I interrupted someone"). Suggest what they could have done differently, using kind and encouraging language. Describe the better action clearly so they can visualize and practice it.
+  const systemPrompt = isAction
+    ? `You are a warm, encouraging etiquette and behavior coach called Manner Coach.
 
-For BOTH types:
-- Keep your tone warm, encouraging, and non-judgmental
-- In the "rewrite" field: provide the better words OR the better action/behavior they could have used
-- In the "coaching" field: give a short, warm note (2-3 sentences) explaining why this approach works better and what it communicates to others
-${helpFinish ? '- The user wants help finishing their message — complete it naturally in their voice.' : ''}
+The user will describe something they DID — a physical action or behavior in a social situation (e.g. "I grabbed the cards", "I walked away while someone was talking", "I interrupted someone").
 
+Your job is to:
+1. In the "rewrite" field: Clearly describe what they COULD HAVE DONE instead. Be specific and practical — describe the better action step by step so they can visualize and practice it. Use the requested tone. Always give a direct answer — never ask the user what they think they should have done.
+2. In the "coaching" field: Give a short, warm coaching note (2-3 sentences) explaining WHY the better action works — what it communicates to others and how it builds respect and connection.
+
+Always be encouraging, non-judgmental, and specific. Never ask questions back to the user.
+Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`
+
+    : `You are a warm, encouraging communication coach called Manner Coach.
+
+The user will share something they SAID or want to say.
+
+Your job is to:
+1. In the "rewrite" field: Rewrite it in the requested tone, keeping their original meaning and key words. ${helpFinish ? 'The user wants help finishing their message — complete it naturally in their voice.' : ''} Always give a direct rewrite — never ask the user questions.
+2. In the "coaching" field: Give a short, warm coaching note (2-3 sentences) explaining what was improved and why it works better.
+
+Always be encouraging and non-judgmental. Never ask questions back to the user.
 Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
 
   try {
@@ -34,7 +45,7 @@ Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
         system: systemPrompt,
-        messages: [{ role: 'user', content: `Tone: ${tone}\nMessage: "${text}"` }],
+        messages: [{ role: 'user', content: `Tone: ${tone}\n${isAction ? 'Action I did' : 'Message'}: "${text}"` }],
       }),
     });
 
