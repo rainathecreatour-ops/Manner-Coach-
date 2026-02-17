@@ -284,6 +284,10 @@ Rewrite the message in the requested tone, keeping the user's original meaning a
 Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
 
     try {
+      if (!ANTHROPIC_API_KEY || ANTHROPIC_API_KEY === 'YOUR_ANTHROPIC_API_KEY_HERE') {
+        showResult({ rewrite: '⚠️ No API key set. Please open index.html and replace YOUR_ANTHROPIC_API_KEY_HERE with your real Anthropic API key.', coaching: '' }, text);
+        return;
+      }
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -300,11 +304,15 @@ Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
         })
       });
       const data = await res.json();
+      if (data.error) {
+        showResult({ rewrite: `⚠️ API Error: ${data.error.message}`, coaching: '' }, text);
+        return;
+      }
       const raw = (data.content || []).map(b => b.text || '').join('').replace(/```json|```/g,'').trim();
       const parsed = JSON.parse(raw);
       showResult(parsed, text);
     } catch (err) {
-      showResult({ rewrite: 'Sorry, there was an error. Please try again.', coaching: '' }, text);
+      showResult({ rewrite: `⚠️ Error: ${err.message}. Check that your API key is correct and try again.`, coaching: '' }, text);
     }
 
     document.getElementById('loading').style.display = 'none';
