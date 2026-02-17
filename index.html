@@ -10,32 +10,6 @@
     button { font-family: inherit; cursor: pointer; }
     textarea { font-family: inherit; }
 
-    /* License Screen */
-    #license-screen {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
-    }
-    .license-card {
-      background: #fff8f3; border-radius: 24px; padding: 40px; max-width: 420px; width: 100%;
-      box-shadow: 0 8px 32px rgba(201,125,110,0.12); border: 1px solid #f0d5cc; text-align: center;
-    }
-    .license-card .icon { font-size: 48px; margin-bottom: 12px; }
-    .license-card h1 { font-size: 26px; font-weight: 700; color: #4a3728; }
-    .license-card p { color: #9b7b6e; margin-top: 8px; font-size: 15px; }
-    .license-card label { display: block; text-align: left; font-weight: 600; font-size: 14px; margin: 24px 0 8px; color: #4a3728; }
-    .license-card input {
-      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #f0d5cc;
-      background: #fdeee8; color: #4a3728; font-size: 14px; outline: none; font-family: inherit;
-    }
-    .license-card .error { color: #c0392b; font-size: 13px; margin-top: 8px; text-align: left; }
-    .unlock-btn {
-      width: 100%; margin-top: 16px; padding: 13px; background: #c97d6e; color: #fff;
-      border: none; border-radius: 12px; font-size: 15px; font-weight: 600;
-    }
-    .unlock-btn:disabled { background: #e8a598; cursor: not-allowed; }
-    .license-note { color: #9b7b6e; font-size: 12px; margin-top: 16px; }
-
-    /* Main App */
-    #app { display: none; padding-bottom: 40px; }
     .header {
       background: #fff8f3; border-bottom: 1px solid #f0d5cc; padding: 16px 24px;
       display: flex; justify-content: space-between; align-items: center;
@@ -48,7 +22,6 @@
     }
     .main { max-width: 520px; margin: 0 auto; padding: 24px 16px; }
 
-    /* Mode Toggle */
     .mode-toggle {
       display: flex; background: #fff8f3; border: 1px solid #f0d5cc;
       border-radius: 14px; padding: 4px; margin-bottom: 24px;
@@ -59,7 +32,6 @@
     }
     .mode-btn.active { background: #c97d6e; color: #fff; }
 
-    /* Tones */
     .tone-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 20px; }
     .tone-btn {
       padding: 10px 6px; border-radius: 12px; border: 2px solid #f0d5cc;
@@ -68,7 +40,6 @@
     .tone-btn.active { border-color: #c97d6e; background: #fdeee8; color: #c97d6e; font-weight: 700; }
     .tone-emoji { font-size: 18px; display: block; }
 
-    /* Input Card */
     .input-card { background: #fff8f3; border: 1.5px solid #f0d5cc; border-radius: 16px; padding: 16px; }
     .record-wrap { text-align: center; margin-bottom: 16px; }
     .record-btn {
@@ -95,12 +66,10 @@
     }
     .coach-btn:disabled { background: #e8a598; cursor: not-allowed; }
 
-    /* Loading */
     .loading { text-align: center; padding: 30px; color: #9b7b6e; }
     .loading .spin { font-size: 32px; animation: pulse 1.2s ease-in-out infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-    /* Result */
     .result-card {
       background: #e8f5ec; border: 1.5px solid #7dab8a; border-radius: 16px; padding: 20px; margin-top: 20px;
     }
@@ -120,12 +89,10 @@
     .save-btn { background: #e8a598; }
     .save-btn.saved { background: #7dab8a; }
 
-    /* Tips */
     .tips { margin-top: 24px; background: #fdeee8; border-radius: 14px; padding: 16px; }
     .tips-title { color: #c97d6e; font-weight: 600; font-size: 13px; margin-bottom: 8px; }
     .tips-text { color: #9b7b6e; font-size: 13px; line-height: 1.7; }
 
-    /* History Overlay */
     #history-overlay {
       display: none; position: fixed; inset: 0; background: rgba(74,55,40,0.35);
       z-index: 100; align-items: flex-end; justify-content: center;
@@ -148,89 +115,64 @@
     .history-date { font-size: 11px; color: #9b7b6e; }
     .history-original { color: #9b7b6e; font-size: 12px; margin-bottom: 6px; font-style: italic; }
     .history-rewrite { color: #4a3728; font-size: 13px; }
-
-    /* Section header */
     .section-label { color: #4a3728; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
   </style>
 </head>
 <body>
 
-<!-- LICENSE SCREEN -->
-<div id="license-screen">
-  <div class="license-card">
-    <div class="icon">🌸</div>
-    <h1>Manner Coach</h1>
-    <p>Speak with confidence, kindness & clarity</p>
-    <label>Gumroad License Key</label>
-    <input type="text" id="license-input" placeholder="Paste your license key here…" />
-    <div class="error" id="license-error" style="display:none"></div>
-    <button class="unlock-btn" id="unlock-btn" onclick="verifyLicense()">Unlock App →</button>
-    <p class="license-note">Purchase a license at <strong>Gumroad</strong> to access Manner Coach</p>
+<div class="header">
+  <div><span>🌸</span> <span class="header-title">Manner Coach</span></div>
+  <button class="history-btn" onclick="openHistory()">📋 History <span id="history-count"></span></button>
+</div>
+
+<div class="main">
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btn-text" onclick="setMode('text')">✍️ Write</button>
+    <button class="mode-btn" id="btn-voice" onclick="setMode('voice')">🎙️ Speak</button>
+  </div>
+
+  <div class="section-label">Choose Your Tone</div>
+  <div class="tone-grid" id="tone-grid"></div>
+
+  <div class="input-card">
+    <div class="record-wrap" id="voice-controls" style="display:none">
+      <button class="record-btn" id="record-btn" onclick="toggleRecording()">🎙️</button>
+      <p class="record-hint" id="record-hint">Tap to start recording</p>
+      <div class="transcript" id="transcript" style="display:none"></div>
+    </div>
+    <textarea class="input-text" id="main-input" rows="5" placeholder="Type what you want to say — rough, incomplete, or full…"></textarea>
+    <div class="input-footer">
+      <label class="help-label">
+        <input type="checkbox" id="help-finish" /> Help me finish this
+      </label>
+      <button class="coach-btn" onclick="coach()" id="coach-btn">Coach Me ✨</button>
+    </div>
+  </div>
+
+  <div class="loading" id="loading" style="display:none">
+    <div class="spin">🌸</div>
+    <p style="margin-top:10px">Crafting your coached response…</p>
+  </div>
+
+  <div class="result-card" id="result-card" style="display:none">
+    <div class="result-label">✅ Your Coached Response</div>
+    <div class="result-text" id="result-text"></div>
+    <div class="coaching-note" id="coaching-note" style="display:none">
+      <div class="coaching-title">💡 Coaching Note</div>
+      <div class="coaching-text" id="coaching-text"></div>
+    </div>
+    <div class="result-btns">
+      <button class="copy-btn" onclick="copyResult()">Copy Text</button>
+      <button class="save-btn" id="save-btn" onclick="saveToHistory()">Save to History</button>
+    </div>
+  </div>
+
+  <div class="tips" id="tips">
+    <div class="tips-title">💬 Tips for using Manner Coach</div>
+    <div class="tips-text">Speak or write naturally — even if it's rough or unfinished. Choose the tone that fits your situation, and let the coach help you find the right words. Your history is always saved so you can revisit and learn.</div>
   </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="app">
-  <div class="header">
-    <div><span>🌸</span> <span class="header-title">Manner Coach</span></div>
-    <button class="history-btn" onclick="openHistory()">📋 History <span id="history-count"></span></button>
-  </div>
-  <div class="main">
-    <!-- Mode Toggle -->
-    <div class="mode-toggle">
-      <button class="mode-btn active" id="btn-text" onclick="setMode('text')">✍️ Write</button>
-      <button class="mode-btn" id="btn-voice" onclick="setMode('voice')">🎙️ Speak</button>
-    </div>
-
-    <!-- Tone Selector -->
-    <div class="section-label">Choose Your Tone</div>
-    <div class="tone-grid" id="tone-grid"></div>
-
-    <!-- Input Card -->
-    <div class="input-card">
-      <div class="record-wrap" id="voice-controls" style="display:none">
-        <button class="record-btn" id="record-btn" onclick="toggleRecording()">🎙️</button>
-        <p class="record-hint" id="record-hint">Tap to start recording</p>
-        <div class="transcript" id="transcript" style="display:none"></div>
-      </div>
-      <textarea class="input-text" id="main-input" rows="5" placeholder="Type what you want to say — rough, incomplete, or full…"></textarea>
-      <div class="input-footer">
-        <label class="help-label">
-          <input type="checkbox" id="help-finish" /> Help me finish this
-        </label>
-        <button class="coach-btn" onclick="coach()" id="coach-btn">Coach Me ✨</button>
-      </div>
-    </div>
-
-    <!-- Loading -->
-    <div class="loading" id="loading" style="display:none">
-      <div class="spin">🌸</div>
-      <p style="margin-top:10px">Crafting your coached response…</p>
-    </div>
-
-    <!-- Result -->
-    <div class="result-card" id="result-card" style="display:none">
-      <div class="result-label">✅ Your Coached Response</div>
-      <div class="result-text" id="result-text"></div>
-      <div class="coaching-note" id="coaching-note" style="display:none">
-        <div class="coaching-title">💡 Coaching Note</div>
-        <div class="coaching-text" id="coaching-text"></div>
-      </div>
-      <div class="result-btns">
-        <button class="copy-btn" onclick="copyResult()">Copy Text</button>
-        <button class="save-btn" id="save-btn" onclick="saveToHistory()">Save to History</button>
-      </div>
-    </div>
-
-    <!-- Tips -->
-    <div class="tips" id="tips">
-      <div class="tips-title">💬 Tips for using Manner Coach</div>
-      <div class="tips-text">Speak or write naturally — even if it's rough or unfinished. Choose the tone that fits your situation, and let the coach help you find the right words. Your history is always saved so you can revisit and learn.</div>
-    </div>
-  </div>
-</div>
-
-<!-- HISTORY OVERLAY -->
 <div id="history-overlay">
   <div class="history-panel">
     <div class="history-header">
@@ -245,7 +187,6 @@
 </div>
 
 <script>
-  // ── State ──────────────────────────────────────────────────────────────────
   const TONES = [
     { id:'friendly',    emoji:'😊', label:'Friendly' },
     { id:'motherly',    emoji:'🤍', label:'Motherly' },
@@ -254,6 +195,9 @@
     { id:'encouraging', emoji:'✨', label:'Encouraging' },
     { id:'firm',        emoji:'🛡️', label:'Firm & Respectful' },
   ];
+
+  // ⬇️ PASTE YOUR ANTHROPIC API KEY BETWEEN THE QUOTES BELOW
+  const ANTHROPIC_API_KEY = 'YOUR_ANTHROPIC_API_KEY_HERE';
 
   let currentMode = 'text';
   let currentTone = 'friendly';
@@ -264,57 +208,8 @@
 
   try { history = JSON.parse(localStorage.getItem('mc_history') || '[]'); } catch {}
 
-  // ── Boot ───────────────────────────────────────────────────────────────────
-  window.onload = () => {
-    buildTones();
-    updateHistoryCount();
-    const saved = localStorage.getItem('mc_license');
-    if (saved) showApp();
-  };
+  window.onload = () => { buildTones(); updateHistoryCount(); };
 
-  function showApp() {
-    document.getElementById('license-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-  }
-
-  // ── License ────────────────────────────────────────────────────────────────
-  document.getElementById('license-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') verifyLicense();
-  });
-
-  async function verifyLicense() {
-    const key = document.getElementById('license-input').value.trim();
-    const errEl = document.getElementById('license-error');
-    const btn = document.getElementById('unlock-btn');
-    if (!key) { showErr('Please enter your license key.'); return; }
-    btn.disabled = true; btn.textContent = 'Verifying…'; errEl.style.display = 'none';
-    try {
-      const res = await fetch('https://api.gumroad.com/v2/licenses/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ product_permalink: 'manner-coach', license_key: key })
-      });
-      const data = await res.json();
-      if (data.success) {
-        localStorage.setItem('mc_license', key);
-        showApp();
-      } else {
-        showErr('Invalid license key. Please check and try again.');
-      }
-    } catch {
-      // Fallback demo: accept any key 5+ chars
-      if (key.length >= 5) { localStorage.setItem('mc_license', key); showApp(); }
-      else showErr('Could not verify. Please try again.');
-    }
-    btn.disabled = false; btn.textContent = 'Unlock App →';
-  }
-
-  function showErr(msg) {
-    const el = document.getElementById('license-error');
-    el.textContent = msg; el.style.display = 'block';
-  }
-
-  // ── Tones ──────────────────────────────────────────────────────────────────
   function buildTones() {
     const grid = document.getElementById('tone-grid');
     grid.innerHTML = TONES.map(t => `
@@ -329,7 +224,6 @@
     document.getElementById('tone-'+id).classList.add('active');
   }
 
-  // ── Mode ───────────────────────────────────────────────────────────────────
   function setMode(m) {
     currentMode = m;
     document.getElementById('btn-text').classList.toggle('active', m === 'text');
@@ -341,11 +235,7 @@
     clearResult();
   }
 
-  // ── Voice ──────────────────────────────────────────────────────────────────
-  function toggleRecording() {
-    if (isRecording) stopRecording();
-    else startRecording();
-  }
+  function toggleRecording() { isRecording ? stopRecording() : startRecording(); }
 
   function startRecording() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -375,7 +265,6 @@
     hint.textContent = isRecording ? 'Recording… tap to stop' : 'Tap to start recording';
   }
 
-  // ── Coach ──────────────────────────────────────────────────────────────────
   async function coach() {
     const text = document.getElementById('main-input').value.trim();
     if (!text) return;
@@ -397,7 +286,12 @@ Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
     try {
       const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
@@ -439,10 +333,8 @@ Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
     tr.style.display = 'none'; tr.textContent = '';
   }
 
-  // ── Copy / Save ────────────────────────────────────────────────────────────
   function copyResult() {
-    const text = document.getElementById('result-text').textContent;
-    navigator.clipboard.writeText(text).then(() => {
+    navigator.clipboard.writeText(document.getElementById('result-text').textContent).then(() => {
       const btn = document.querySelector('.copy-btn');
       btn.textContent = 'Copied! ✓';
       setTimeout(() => btn.textContent = 'Copy Text', 2000);
@@ -463,7 +355,6 @@ Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
     el.textContent = history.length > 0 ? `(${history.length})` : '';
   }
 
-  // ── History ────────────────────────────────────────────────────────────────
   function openHistory() {
     const list = document.getElementById('history-list');
     if (history.length === 0) {
