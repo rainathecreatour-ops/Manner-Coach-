@@ -22,7 +22,6 @@
     }
     .main { max-width: 520px; margin: 0 auto; padding: 24px 16px; padding-bottom: 60px; }
 
-    /* Toggle rows */
     .toggle-row {
       display: flex; background: #fff8f3; border: 1px solid #f0d5cc;
       border-radius: 14px; padding: 4px; margin-bottom: 12px;
@@ -33,7 +32,6 @@
     }
     .toggle-btn.active { background: #c97d6e; color: #fff; }
 
-    /* Type toggle — spoken vs action */
     .type-toggle {
       display: flex; background: #fff8f3; border: 1px solid #f0d5cc;
       border-radius: 14px; padding: 4px; margin-bottom: 20px;
@@ -145,25 +143,21 @@
 
 <div class="main">
 
-  <!-- Input Mode: Write or Speak -->
   <div class="section-label">Input Mode</div>
   <div class="toggle-row" style="margin-bottom:12px;">
     <button class="toggle-btn active" id="btn-text" onclick="setMode('text')">✍️ Write</button>
     <button class="toggle-btn" id="btn-voice" onclick="setMode('voice')">🎙️ Speak</button>
   </div>
 
-  <!-- Type: Spoken Words or Action -->
   <div class="section-label">What are you coaching?</div>
   <div class="type-toggle">
     <button class="type-btn active" id="btn-spoken" onclick="setType('spoken')">🗣️ Spoken Words</button>
     <button class="type-btn" id="btn-action" onclick="setType('action')">🤝 An Action I Did</button>
   </div>
 
-  <!-- Tone -->
   <div class="section-label">Choose Your Tone</div>
   <div class="tone-grid" id="tone-grid"></div>
 
-  <!-- Input Card -->
   <div class="input-card">
     <div class="record-wrap" id="voice-controls" style="display:none">
       <button class="record-btn" id="record-btn" onclick="toggleRecording()">🎙️</button>
@@ -182,13 +176,11 @@
     </div>
   </div>
 
-  <!-- Loading -->
   <div class="loading" id="loading" style="display:none">
     <div class="spin">🌸</div>
     <p style="margin-top:10px">Crafting your coached response…</p>
   </div>
 
-  <!-- Result -->
   <div class="result-card" id="result-card" style="display:none">
     <div class="result-label" id="result-label">✅ Here's What You Could Say Instead</div>
     <div class="result-text" id="result-text"></div>
@@ -203,18 +195,17 @@
     </div>
   </div>
 
-  <!-- Tips -->
   <div class="tips" id="tips">
     <div class="tips-title">💬 How to use Manner Coach</div>
     <div class="tips-text">
       Select <strong>Spoken Words</strong> to improve something you said or want to say.<br><br>
       Select <strong>An Action I Did</strong> to describe a behavior — like "I grabbed the cards" or "I walked away mid-conversation" — and the coach will show you a better way to handle it.<br><br>
+      <strong>Need help writing a letter?</strong> Start typing what you want to say, check "Help me finish this", choose your tone, and the coach will complete it for you!<br><br>
       Choose a tone, then tap <strong>Coach Me</strong>!
     </div>
   </div>
 </div>
 
-<!-- History Overlay -->
 <div id="history-overlay">
   <div class="history-panel">
     <div class="history-header">
@@ -250,7 +241,6 @@
 
   window.onload = () => { buildTones(); updateHistoryCount(); };
 
-  // ── Tones ──────────────────────────────────────────────────────────────────
   function buildTones() {
     const grid = document.getElementById('tone-grid');
     grid.innerHTML = TONES.map(t => `
@@ -265,7 +255,6 @@
     document.getElementById('tone-'+id).classList.add('active');
   }
 
-  // ── Input Mode (write / voice) ─────────────────────────────────────────────
   function setMode(m) {
     currentMode = m;
     document.getElementById('btn-text').classList.toggle('active', m === 'text');
@@ -274,7 +263,6 @@
     updatePlaceholder();
   }
 
-  // ── Type (spoken / action) ─────────────────────────────────────────────────
   function setType(t) {
     currentType = t;
     document.getElementById('btn-spoken').classList.toggle('active', t === 'spoken');
@@ -295,7 +283,6 @@
     }
   }
 
-  // ── Voice Recording ────────────────────────────────────────────────────────
   function toggleRecording() { isRecording ? stopRecording() : startRecording(); }
 
   function startRecording() {
@@ -326,7 +313,6 @@
     hint.textContent = isRecording ? 'Recording… tap to stop' : 'Tap to start recording';
   }
 
-  // ── Coach ──────────────────────────────────────────────────────────────────
   async function coach() {
     const text = document.getElementById('main-input').value.trim();
     if (!text) return;
@@ -375,7 +361,6 @@
     document.getElementById('save-btn').style.background = '#e8a598';
   }
 
-  // ── Clear ──────────────────────────────────────────────────────────────────
   function clearInput() {
     document.getElementById('main-input').value = '';
     document.getElementById('help-finish').checked = false;
@@ -390,7 +375,6 @@
     clearInput();
   }
 
-  // ── Copy / Save ────────────────────────────────────────────────────────────
   function copyResult() {
     navigator.clipboard.writeText(document.getElementById('result-text').textContent).then(() => {
       const btn = document.querySelector('.copy-btn');
@@ -419,7 +403,6 @@
     el.textContent = history.length > 0 ? `(${history.length})` : '';
   }
 
-  // ── History ────────────────────────────────────────────────────────────────
   function openHistory() {
     const list = document.getElementById('history-list');
     if (history.length === 0) {
