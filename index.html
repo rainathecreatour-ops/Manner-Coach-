@@ -453,12 +453,19 @@
         body: JSON.stringify({ text, tone: toneLabel, type: currentType, helpFinish, apiKey: userApiKey })
       });
       const data = await res.json();
+      
+      // Debug logging
+      console.log('API Response:', data);
+      console.log('Response status:', res.status);
+      
       if (data.error) {
+        console.error('Error from API:', data.error);
         showResult({ rewrite: `⚠️ Error: ${data.error}`, coaching: '' }, text);
         return;
       }
       showResult(data, text);
     } catch (err) {
+      console.error('Fetch error:', err);
       showResult({ rewrite: `⚠️ Error: ${err.message}`, coaching: '' }, text);
     }
 
