@@ -5,8 +5,9 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { text, tone, type, helpFinish } = req.body;
+  const { text, tone, type, helpFinish, apiKey } = req.body;
   if (!text || !tone) return res.status(400).json({ error: 'Missing text or tone' });
+  if (!apiKey) return res.status(400).json({ error: 'Missing API key' });
 
   const isAction = type === 'action';
 
@@ -38,7 +39,7 @@ Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
@@ -50,11 +51,23 @@ Respond ONLY with valid JSON: {"rewrite":"...","coaching":"..."}`;
     });
 
     const data = await response.json();
-    if (data.error) return res.status(500).json({ error: data.error.message });
+    
+    // Log errors for debugging
+    if (data.error) {
+      console.error('Anthropic API error:', data.error);
+      return res.status(500).json({ error: data.error.message || JSON.stringify(data.error) });
+    }
+    
+    if (!response.ok) {
+      console.error('Response not OK:', response.status, data);
+      return res.status(response.status).json({ error: data.error?.message || 'API request failed' });
+    }
+    
     const raw = (data.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(raw);
     return res.status(200).json(parsed);
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('Coach API error:', err);
+    return res.status(500).json({ error: err.message || 'Unknown error' });
   }
 }
