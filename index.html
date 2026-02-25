@@ -10,6 +10,43 @@
     button { font-family: inherit; cursor: pointer; }
     textarea { font-family: inherit; }
 
+    /* API Key Setup Screen */
+    #api-setup {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
+    }
+    .setup-card {
+      background: #fff8f3; border-radius: 24px; padding: 40px; max-width: 500px; width: 100%;
+      box-shadow: 0 8px 32px rgba(201,125,110,0.12); border: 1px solid #f0d5cc;
+    }
+    .setup-card .icon { font-size: 48px; margin-bottom: 12px; text-align: center; }
+    .setup-card h1 { font-size: 26px; font-weight: 700; color: #4a3728; text-align: center; }
+    .setup-card p { color: #9b7b6e; margin-top: 8px; font-size: 15px; text-align: center; }
+    .setup-steps {
+      background: #fdeee8; border-radius: 14px; padding: 20px; margin: 24px 0;
+      color: #4a3728; font-size: 14px; line-height: 1.7;
+    }
+    .setup-steps strong { color: #c97d6e; }
+    .setup-steps ol { margin-left: 20px; margin-top: 8px; }
+    .setup-steps li { margin-bottom: 8px; }
+    .setup-link {
+      display: block; text-align: center; background: #c97d6e; color: #fff;
+      padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 600;
+      margin-bottom: 16px; transition: background 0.2s;
+    }
+    .setup-link:hover { background: #b56d5e; }
+    .setup-card label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: #4a3728; }
+    .setup-card input {
+      width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid #f0d5cc;
+      background: #fdeee8; color: #4a3728; font-size: 14px; outline: none; font-family: 'Courier New', monospace;
+    }
+    .setup-error { color: #c0392b; font-size: 13px; margin-top: 8px; display: none; }
+    .setup-btn {
+      width: 100%; margin-top: 16px; padding: 13px; background: #c97d6e; color: #fff;
+      border: none; border-radius: 12px; font-size: 15px; font-weight: 600;
+    }
+    .setup-btn:disabled { background: #e8a598; cursor: not-allowed; }
+    .setup-note { color: #9b7b6e; font-size: 12px; margin-top: 16px; text-align: center; line-height: 1.6; }
+
     .header {
       background: #fff8f3; border-bottom: 1px solid #f0d5cc; padding: 16px 24px;
       display: flex; justify-content: space-between; align-items: center;
@@ -136,6 +173,44 @@
 </head>
 <body>
 
+<!-- API Key Setup Screen -->
+<div id="api-setup">
+  <div class="setup-card">
+    <div class="icon">🌸</div>
+    <h1>Welcome to Manner Coach</h1>
+    <p>One quick setup step to get started</p>
+    
+    <div class="setup-steps">
+      <strong>📝 You'll need a free Anthropic API key:</strong>
+      <ol>
+        <li>Click the button below to visit Anthropic</li>
+        <li>Sign up for a free account (comes with $5 in credits)</li>
+        <li>Go to <strong>Settings → API Keys</strong></li>
+        <li>Click <strong>"Create Key"</strong> and copy it</li>
+        <li>Paste it below</li>
+      </ol>
+    </div>
+
+    <a href="https://console.anthropic.com/" target="_blank" class="setup-link">
+      Get Your Free API Key →
+    </a>
+
+    <label>Paste Your Anthropic API Key</label>
+    <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." />
+    <div class="setup-error" id="setup-error"></div>
+    
+    <button class="setup-btn" id="save-key-btn" onclick="saveApiKey()">Save & Start Coaching</button>
+    
+    <p class="setup-note">
+      🔒 Your API key is stored only in your browser and never leaves your device. 
+      We don't see it or store it on any server.
+    </p>
+  </div>
+</div>
+
+<!-- Main App (hidden until API key is set) -->
+<div id="main-app" style="display:none;">
+
 <div class="header">
   <div><span>🌸</span> <span class="header-title">Manner Coach</span></div>
   <button class="history-btn" onclick="openHistory()">📋 History <span id="history-count"></span></button>
@@ -219,6 +294,9 @@
   </div>
 </div>
 
+</div>
+<!-- End Main App -->
+
 <script>
   const TONES = [
     { id:'friendly',    emoji:'😊', label:'Friendly' },
@@ -236,10 +314,50 @@
   let recognizer = null;
   let isRecording = false;
   let history = [];
+  let userApiKey = '';
 
   try { history = JSON.parse(localStorage.getItem('mc_history') || '[]'); } catch {}
 
-  window.onload = () => { buildTones(); updateHistoryCount(); };
+  window.onload = () => { 
+    checkApiKey();
+    buildTones(); 
+    updateHistoryCount(); 
+  };
+
+  // ── API Key Setup ──────────────────────────────────────────────────────────
+  function checkApiKey() {
+    const saved = localStorage.getItem('mc_api_key');
+    if (saved) {
+      userApiKey = saved;
+      document.getElementById('api-setup').style.display = 'none';
+      document.getElementById('main-app').style.display = 'block';
+    } else {
+      document.getElementById('api-setup').style.display = 'flex';
+      document.getElementById('main-app').style.display = 'none';
+    }
+  }
+
+  function saveApiKey() {
+    const key = document.getElementById('api-key-input').value.trim();
+    const errEl = document.getElementById('setup-error');
+    
+    if (!key) {
+      errEl.textContent = 'Please enter your API key';
+      errEl.style.display = 'block';
+      return;
+    }
+    
+    if (!key.startsWith('sk-ant-')) {
+      errEl.textContent = 'API key should start with "sk-ant-"';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    localStorage.setItem('mc_api_key', key);
+    userApiKey = key;
+    document.getElementById('api-setup').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+  }
 
   function buildTones() {
     const grid = document.getElementById('tone-grid');
@@ -296,6 +414,9 @@
       document.getElementById('main-input').value = t;
       const tr = document.getElementById('transcript');
       tr.textContent = `Heard: "${t}"`; tr.style.display = 'block';
+      
+      // Auto-coach after transcription
+      setTimeout(() => coach(), 500);
     };
     recognizer.onend = () => { isRecording = false; updateRecordUI(); };
     recognizer.start();
@@ -329,7 +450,7 @@
       const res = await fetch('/api/coach', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, tone: toneLabel, type: currentType, helpFinish })
+        body: JSON.stringify({ text, tone: toneLabel, type: currentType, helpFinish, apiKey: userApiKey })
       });
       const data = await res.json();
       if (data.error) {
